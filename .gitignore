@@ -1,0 +1,10 @@
+**/bin/
+**/obj/
+**/.vs/
+**/publish/
+**/local.settings.json
+**/appsettings.*.local.json
+**/*.user
+**/*.suo
+**/Properties/PublishProfiles/
+.env

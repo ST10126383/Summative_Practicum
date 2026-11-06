@@ -1,0 +1,48 @@
+@model AgriStreamIoT.Models.IrrigationCommand
+@{
+    ViewData["Title"] = "Trigger Irrigation";
+    var devices = ViewBag.Devices as IEnumerable<AgriStreamIoT.Models.DeviceStatus> ?? Enumerable.Empty<AgriStreamIoT.Models.DeviceStatus>();
+}
+
+<div class="container mt-4">
+    <h2>Trigger Irrigation Command</h2>
+    <p class="text-muted">
+        The MVC app calls an <strong>HTTP POST Azure Function</strong>, which places the command on an Azure Storage Queue.
+        A <strong>Queue-triggered Function</strong> then updates the device status in Azure SQL Database.
+    </p>
+
+    <div class="row">
+        <div class="col-md-6">
+            <form asp-action="Trigger" method="post">
+                @Html.AntiForgeryToken()
+                <div class="mb-3">
+                    <label class="form-label">Device</label>
+                    <select asp-for="DeviceId" class="form-select" required>
+                        <option value="">-- select device --</option>
+                        @foreach (var d in devices)
+                        {
+                            <option value="@d.DeviceId">@d.DeviceId (@d.FieldId) – @d.Status</option>
+                        }
+                    </select>
+                </div>
+                <div class="mb-3">
+                    <label asp-for="FieldId" class="form-label"></label>
+                    <input asp-for="FieldId" class="form-control" value="Field-A" />
+                </div>
+                <div class="mb-3">
+                    <label asp-for="Action" class="form-label"></label>
+                    <select asp-for="Action" class="form-select">
+                        <option>StartIrrigation</option>
+                        <option>StopIrrigation</option>
+                    </select>
+                </div>
+                <div class="mb-3">
+                    <label asp-for="DurationMinutes" class="form-label"></label>
+                    <input asp-for="DurationMinutes" class="form-control" type="number" min="1" max="180" />
+                </div>
+                <button type="submit" class="btn btn-warning">Send Command</button>
+                <a asp-controller="Dashboard" asp-action="Index" class="btn btn-outline-secondary ms-2">Cancel</a>
+            </form>
+        </div>
+    </div>
+</div>

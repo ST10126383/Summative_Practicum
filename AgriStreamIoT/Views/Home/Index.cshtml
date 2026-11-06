@@ -1,0 +1,53 @@
+@{
+    ViewData["Title"] = "Home";
+}
+
+<div class="text-center mt-5">
+    <h1 class="display-5">AgriStream IoT</h1>
+    <p class="lead">Smart Monitoring Platform for Large-Scale Commercial Farms</p>
+    <p class="text-muted">Real-time soil sensor telemetry • Drone imagery • Automated irrigation control</p>
+    <hr />
+    @if (User.Identity?.IsAuthenticated == true)
+    {
+        <a class="btn btn-success btn-lg" asp-controller="Dashboard" asp-action="Index">Open Field Dashboard</a>
+    }
+    else
+    {
+        <a class="btn btn-success btn-lg" asp-controller="Account" asp-action="Login">Sign In</a>
+    }
+</div>
+
+<div class="row mt-5">
+    <div class="col-md-3">
+        <div class="card h-100 border-success">
+            <div class="card-body">
+                <h5>Azure App Service</h5>
+                <p class="small">Hosts this MVC management application with Autoscale.</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card h-100 border-primary">
+            <div class="card-body">
+                <h5>Azure SQL</h5>
+                <p class="small">User accounts (roles) and device operational status.</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card h-100 border-info">
+            <div class="card-body">
+                <h5>Blob + Table Storage</h5>
+                <p class="small">Drone images (Blob) and high-frequency telemetry (Table).</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card h-100 border-warning">
+            <div class="card-body">
+                <h5>4 Azure Functions</h5>
+                <p class="small">Blob, HTTP GET, HTTP POST, Queue triggers form the serverless pipeline.</p>
+            </div>
+        </div>
+    </div>
+</div>

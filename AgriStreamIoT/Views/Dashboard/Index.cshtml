@@ -1,0 +1,118 @@
+@model AgriStreamIoT.Models.DashboardViewModel
+@{
+    ViewData["Title"] = "Field Dashboard";
+}
+
+<div class="container-fluid mt-3">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <div>
+            <h2>Field Dashboard</h2>
+            <p class="text-muted mb-0">Welcome, <strong>@Model.CurrentUser</strong> (@Model.CurrentRole)</p>
+        </div>
+        <div>
+            <a asp-controller="Media" asp-action="Upload" class="btn btn-outline-primary me-2">Upload Drone Image</a>
+            <a asp-controller="Irrigation" asp-action="Trigger" class="btn btn-warning">Trigger Irrigation</a>
+        </div>
+    </div>
+
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success">@TempData["Success"]</div>
+    }
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger">@TempData["Error"]</div>
+    }
+
+    <div class="row">
+        <!-- Telemetry -->
+        <div class="col-lg-6 mb-4">
+            <div class="card h-100">
+                <div class="card-header bg-primary text-white">
+                    Latest Telemetry <small>(from HTTP GET Function / Table Storage)</small>
+                </div>
+                <div class="card-body p-0">
+                    <table class="table table-sm table-striped mb-0">
+                        <thead><tr><th>Device</th><th>Sensor</th><th>Value</th><th>Time (UTC)</th></tr></thead>
+                        <tbody>
+                        @if (Model.LatestTelemetry.Any())
+                        {
+                            @foreach (var t in Model.LatestTelemetry.Take(15))
+                            {
+                                <tr>
+                                    <td>@t.DeviceId</td>
+                                    <td>@t.SensorType</td>
+                                    <td>@t.Value @t.Unit</td>
+                                    <td>@t.ReadingTime.ToString("HH:mm:ss")</td>
+                                </tr>
+                            }
+                        }
+                        else
+                        {
+                            <tr><td colspan="4" class="text-center text-muted py-3">No telemetry yet. Data appears after sensors or simulation feed Table Storage.</td></tr>
+                        }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Devices -->
+        <div class="col-lg-6 mb-4">
+            <div class="card h-100">
+                <div class="card-header bg-info text-white">Irrigation Devices (Azure SQL)</div>
+                <div class="card-body p-0">
+                    <table class="table table-sm table-striped mb-0">
+                        <thead><tr><th>Device</th><th>Field</th><th>Status</th><th>Updated</th></tr></thead>
+                        <tbody>
+                        @foreach (var d in Model.Devices)
+                        {
+                            <tr>
+                                <td>@d.DeviceId</td>
+                                <td>@d.FieldId</td>
+                                <td>
+                                    @if (d.Status == "Irrigating")
+                                    { <span class="badge bg-success">@d.Status</span> }
+                                    else if (d.Status == "Error")
+                                    { <span class="badge bg-danger">@d.Status</span> }
+                                    else
+                                    { <span class="badge bg-secondary">@d.Status</span> }
+                                </td>
+                                <td>@d.LastUpdated.ToString("HH:mm:ss")</td>
+                            </tr>
+                        }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent drone uploads -->
+    <div class="card">
+        <div class="card-header">Recent Drone Image Uploads (Blob + Table Audit)</div>
+        <div class="card-body p-0">
+            <table class="table table-sm mb-0">
+                <thead><tr><th>Blob Name</th><th>Uploaded By</th><th>Status</th><th>Time</th></tr></thead>
+                <tbody>
+                @if (Model.RecentUploads.Any())
+                {
+                    @foreach (var a in Model.RecentUploads)
+                    {
+                        <tr>
+                            <td><code>@a.BlobName</code></td>
+                            <td>@a.UploadedBy</td>
+                            <td>@a.ProcessingStatus</td>
+                            <td>@a.UploadTime.ToString("yyyy-MM-dd HH:mm")</td>
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr><td colspan="4" class="text-center text-muted py-3">No images uploaded yet.</td></tr>
+                }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
